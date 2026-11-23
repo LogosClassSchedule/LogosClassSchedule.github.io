@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Расписание учебного центра — ул. Свердлова, 82</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f6fb;
+    color: #1f2937;
+    padding: 40px 20px 60px;
+  }
+
+  header {
+    text-align: center;
+    max-width: 1000px;
+    margin: 0 auto 36px;
+  }
+
+  h1 { font-size: 2rem; margin-bottom: 8px; }
+
+  .address {
+    display: inline-block;
+    background: #e0e7ff;
+    color: #4338ca;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-top: 8px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+
+  /* Раздел */
+  .section {
+    max-width: 1000px;
+    margin: 0 auto 40px;
+  }
+
+  .section-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #312e81;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #c7d2fe;
+  }
+
+  /* Подраздел (предмет) */
+  .subject {
+    margin-bottom: 22px;
+  }
+
+  .subject-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
+  }
+
+  /* Сетка карточек */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border-left: 6px solid #6366f1;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .card h3 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: #111827;
+  }
+
+  .card .time {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 10px;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  /* Цвета статусов */
+  .status-full { background: #fee2e2; color: #b91c1c; }
+  .status-few  { background: #fef9c3; color: #a16207; }
+  .status-open { background: #dcfce7; color: #15803d; }
+  .status-none { background: #e5e7eb; color: #4b5563; }
+
+  /* ===== Всплывающее окно ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 460px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    transform: translateY(15px);
+    transition: transform 0.2s ease;
+  }
+
+  .modal-overlay.active .modal { transform: translateY(0); }
+
+  .modal h2 {
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+    color: #111827;
+  }
+
+  .modal .modal-time {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+
+  .modal .modal-body {
+    font-size: 0.95rem;
+    color: #374151;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+
+  .slots {
+    display: inline-block;
+    margin-top: 14px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+
+  .slots-free { background: #dcfce7; color: #15803d; }
+  .slots-low  { background: #fef9c3; color: #a16207; }
+  .slots-none { background: #fee2e2; color: #b91c1c; }
+
+  .modal .close-btn {
+    display: block;
+    margin-top: 22px;
+    width: 100%;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .modal .close-btn:hover { background: #4f46e5; }
+
+  /* Список «ведётся набор» */
+  .recruit-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .recruit-item {
+    background: #fff;
+    border: 1px dashed #a5b4fc;
+    color: #4338ca;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    border-radius: 999px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Расписание занятий</h1>
+  <p class="subtitle">Нажмите на карточку, чтобы узнать подробности</p>
+  <div class="address">ул. Свердлова, 82</div>
+</header>
+
+<div id="app"></div>
+
+<!-- Всплывающее окно -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle"></h2>
+    <div class="modal-time" id="modalTime"></div>
+    <div class="modal-body" id="modalDesc"></div>
+    <div id="modalSlots"></div>
+    <button class="close-btn" id="closeBtn">Закрыть</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ДАННЫЕ РАСПИСАНИЯ
+   - Чтобы изменить занятие, правьте поля в объектах ниже.
+   - slots: { free: число, total: число } — свободных/всего
+   - info: текст для всплывающего окна (можно с \n)
+   ========================================================= */
+const scheduleData = [
+  {
+    section: "Английский язык",
+    subjects: [
+      {
+        subject: "Английский язык (ВТ, ЧТ)",
+        cards: [
+          { title: "AS-I", time: "10:00 – 10:45", slots: { free: 5, total: 8 }, info: "2–3 класс, 2 смена" },
+          { title: "GoGe-3", time: "10:50 – 11:50", slots: { free: 1, total: 8 }, info: "6 класс, 2 смена" },
+          { title: "GoGe-2", time: "13:20 – 14:20", slots: { free: 2, total: 8 }, info: "4–5 класс, 1 смена" },
+          { title: "AS-III-1", time: "14:25 – 15:10", slots: { free: 3, total: 8 }, info: "3–4 класс, 1 смена" },
+          { title: "AS-S", time: "15:20 – 16:05", slots: { free: 0, total: 8 }, info: "1 класс, 1 смена" },
+          { title: "Get A2", time: "16:10 – 17:10", slots: { free: 5, total: 8 }, info: "8–9 класс, 1 смена" },
+          { title: "AS-III-2", time: "18:20 – 19:05", slots: { free: 3, total: 8 }, info: "3–4 класс, 2 смена" }
+        ]
+      }
+    ]
+  },
+  {
+    section: "Подготовка к ОГЭ / ЕГЭ",
+    subjects: [
+      {
+        subject: "Математика",
+        cards: [
+          { title: "ОГЭ (для начинающих)", time: "ВТ 17:00 – 19:00", slots: { free: 1, total: 8 }, info: "Группа подготовки к ОГЭ" },
+          { title: "ОГЭ (для продвинутых)", time: "ЧТ 17:00 – 19:00", slots: { free: 1, total: 8 }, info: "Группа подготовки к ОГЭ" },
+          { title: "ЕГЭ", time: "ПТ 17:00 – 19:00", slots: { free: 0, total: 8 }, info: "Группа подготовки к ЕГЭ" },
+          { title: "ОГЭ (восьмиклассники)", time: "СБ 10:00 – 12:00", slots: { free: 3, total: 8 }, info: "Группа для восьмиклассников" }
+        ]
+      },
+      {
+        subject: "Химия",
+        cards: [
+          { title: "ЕГЭ", time: "СБ 10:00 – 12:00", slots: { free: 5, total: 8 }, info: "Группа подготовки к ЕГЭ" }
+        ]
+      },
+      {
+        subject: "Информатика",
+        cards: [
+          { title: "ЕГЭ", time: "СБ 10:00 – 12:00", slots: { free: 5, total: 6 }, info: "Группа подготовки к ЕГЭ" }
+        ]
+      },
+      {
+        subject: "Физика",
+        cards: [
+          { title: "ОГЭ", time: "ПТ 18:00 – 19:00", slots: { free: 4, total: 6 }, info: "Группа подготовки к ОГЭ" }
+        ]
+      }
+    ]
+  },
+  {
+    section: "Школьная программа",
+    subjects: [
+      {
+        subject: "Химия",
+        cards: [
+          { title: "9 класс", time: "СБ 12:00 – 14:00", slots: { free: 5, total: 8 }, info: "Школьная программа, 9 класс" }
+        ]
+      },
+      {
+        subject: "Репетитор 1–2 класс",
+        cards: [
+          { title: "Индивидуальное занятие", time: "ПН 19:00 – 20:00", slots: null, info: "Набор закрыт" },
+          { title: "Индивидуальное занятие", time: "СР 19:00 – 20:00", slots: null, info: "Набор закрыт" },
+          { title: "Индивидуальное занятие", time: "ПТ 19:00 – 20:00", slots: null, info: "Набор закрыт" }
+        ]
+      }
+    ]
+  },
+  {
+    section: "Дошкольники",
+    subjects: [
+      {
+        subject: "Подготовка к школе",
+        cards: [
+          { title: "Группа 5–6 лет", time: "ВТ, ЧТ 17:30 – 18:30", slots: { free: 1, total: 8 }, info: "Подготовка к школе для детей 5–6 лет" }
+        ]
+      },
+      {
+        subject: "Школа раннего развития",
+        cards: [
+          { title: "Индивидуальное занятие", time: "ПТ 17:30 – 18:15", slots: null, info: "Ведётся набор. Предполагаемое время уточняйте у администратора." }
+        ]
+      },
+      {
+        subject: "Логопед (ВТ, ЧТ)",
+        cards: [
+          { title: "Запись по времени", time: "ВТ, ЧТ 16:00 – 19:30", slots: null, info: "16:00 — занято\n16:30 — занято\n17:00 — занято в ЧТ, свободно во ВТ\n17:30 — занято\n18:00 — занято\n18:30 — занято\n19:00 — занято\n19:30 — свободно" }
+        ]
+      }
+    ]
+  },
+  {
+    section: "Дополнительные занятия",
+    subjects: [
+      {
+        subject: "Программирование",
+        cards: [
+          { title: "Группа 8–12 лет", time: "СР 18:30 – 20:00", slots: { free: 2, total: 8 }, info: "Группа для детей 8–12 лет" },
+          { title: "Группа 14+", time: "СБ 12:00 – 14:00", slots: { free: 2, total: 6 }, info: "Группа для подростков 14+" }
+        ]
+      }
+    ]
+  }
+];
+
+/* Список «ведётся набор в группы» */
+const recruiting = [
+  "Психолог",
+  "Вязание крючком",
+  "Школа раннего развития",
+  "ИЗО-лепка",
+  "ИЗО-студия",
+  "Подготовка к экзаменам по обществознанию",
+  "Подготовка к экзаменам по истории"
+];
+
+/* =========================================================
+   ЛОГИКА ОТОБРАЖЕНИЯ (менять не нужно)
+   ========================================================= */
+const app = document.getElementById("app");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTime = document.getElementById("modalTime");
+const modalDesc = document.getElementById("modalDesc");
+const modalSlots = document.getElementById("modalSlots");
+
+function slotsBadge(slots) {
+  if (!slots) return { text: "Набор закрыт", cls: "status-none" };
+  const { free, total } = slots;
+  if (free === 0) return { text: `Мест нет (0/${total})`, cls: "status-full" };
+  if (free <= 2) return { text: `Мало мест (${free}/${total})`, cls: "status-few" };
+  return { text: `Свободно ${free}/${total}`, cls: "status-open" };
+}
+
+function slotsDetail(slots) {
+  if (!slots) return "";
+  const { free, total } = slots;
+  if (free === 0) return `<span class="slots slots-none">Свободных мест нет (0 из ${total})</span>`;
+  if (free <= 2) return `<span class="slots slots-low">Осталось мало мест: ${free} из ${total}</span>`;
+  return `<span class="slots slots-free">Свободных мест: ${free} из ${total}</span>`;
+}
+
+// Отрисовка
+scheduleData.forEach(sec => {
+  const sectionEl = document.createElement("section");
+  sectionEl.className = "section";
+
+  const titleEl = document.createElement("div");
+  titleEl.className = "section-title";
+  titleEl.textContent = sec.section;
+  sectionEl.appendChild(titleEl);
+
+  sec.subjects.forEach(sub => {
+    const subjEl = document.createElement("div");
+    subjEl.className = "subject";
+
+    const subjTitle = document.createElement("div");
+    subjTitle.className = "subject-title";
+    subjTitle.textContent = sub.subject;
+    subjEl.appendChild(subjTitle);
+
+    const cardsEl = document.createElement("div");
+    cardsEl.className = "cards";
+
+    sub.cards.forEach(cardData => {
+      const card = document.createElement("div");
+      card.className = "card";
+      const badge = slotsBadge(cardData.slots);
+      card.innerHTML = `
+        <h3>${cardData.title}</h3>
+        <div class="time">${cardData.time}</div>
+        <span class="badge ${badge.cls}">${badge.text}</span>
+      `;
+      card.addEventListener("click", () => openModal(cardData));
+      cardsEl.appendChild(card);
+    });
+
+    subjEl.appendChild(cardsEl);
+    sectionEl.appendChild(subjEl);
+  });
+
+  app.appendChild(sectionEl);
+});
+
+// Раздел «Ведётся набор»
+const recruitSection = document.createElement("section");
+recruitSection.className = "section";
+recruitSection.innerHTML = `
+  <div class="section-title">Ведётся набор в группы</div>
+  <div class="recruit-list">
+    ${recruiting.map(name => `<span class="recruit-item">${name}</span>`).join("")}
+  </div>
+`;
+app.appendChild(recruitSection);
+
+// Модальное окно
+function openModal(data) {
+  modalTitle.textContent = data.title;
+  modalTime.textContent = data.time;
+  modalDesc.textContent = data.info || "";
+  modalSlots.innerHTML = slotsDetail(data.slots);
+  overlay.classList.add("active");
+}
+
+function closeModal() { overlay.classList.remove("active"); }
+
+document.getElementById("closeBtn").addEventListener("click", closeModal);
+overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+</script>
+
+</body>
+</html>
