@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Расписание учебного центра «Логос»</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f6fb;
+    color: #1f2937;
+    padding: 40px 20px 60px;
+  }
+
+  header {
+    text-align: center;
+    max-width: 1100px;
+    margin: 0 auto 24px;
+  }
+
+  h1 { font-size: 2rem; margin-bottom: 6px; }
+
+  .center-desc {
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 720px;
+    margin: 0 auto 10px;
+  }
+
+  .subtitle {
+    color: #6b7280;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+  }
+
+  .address-tabs {
+    display: inline-flex;
+    background: #e5e7eb;
+    border-radius: 999px;
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .address-tab {
+    border: none;
+    background: transparent;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .address-tab.active {
+    background: #6366f1;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.4);
+  }
+
+  .address-tab:not(.active):hover { background: #d1d5db; }
+
+  .address-info {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 10px;
+  }
+
+  .address-info strong { color: #4338ca; }
+
+  #app { max-width: 1100px; margin: 0 auto; }
+
+  .section { margin-bottom: 40px; }
+
+  .section-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #312e81;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #c7d2fe;
+  }
+
+  .recruit-title {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.15s ease;
+  }
+
+  .recruit-title:hover { color: #4338ca; }
+
+  .recruit-title .hint {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6366f1;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    background: #eef2ff;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+
+  .subject { margin-bottom: 22px; }
+
+  .subject-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border-left: 6px solid #6366f1;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .card h3 { font-size: 1rem; margin-bottom: 4px; color: #111827; }
+
+  .card .time { font-size: 0.85rem; color: #6b7280; margin-bottom: 10px; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .status-full { background: #fee2e2; color: #b91c1c; }
+  .status-few  { background: #fef9c3; color: #a16207; }
+  .status-open { background: #dcfce7; color: #15803d; }
+  .status-none { background: #e5e7eb; color: #4b5563; }
+
+  .recruit-list { display: flex; flex-wrap: wrap; gap: 14px; }
+
+  .recruit-item {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border: 2px solid #a5b4fc;
+    color: #3730a3;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 16px 26px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 3px 10px rgba(99,102,241,0.15);
+  }
+
+  .recruit-item:hover {
+    background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99,102,241,0.25);
+  }
+
+  .contact-block {
+    width: 100%;
+    max-width: 1100px;
+    margin: 10px auto 0;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    border-radius: 18px;
+    padding: 30px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .contact-block h2 { font-size: 1.4rem; margin-bottom: 10px; }
+
+  .contact-block p { opacity: 0.95; line-height: 1.7; margin-bottom: 16px; }
+
+  .contact-link {
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+  }
+
+  .contact-link:hover { opacity: 0.8; }
+
+  .contact-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+  }
+
+  .contact-card {
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 0.95rem;
+    min-width: 240px;
+  }
+
+  .contact-card strong { display: block; font-size: 1rem; margin-bottom: 2px; }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+  }
+
+  .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+  .modal {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    transform: translateY(15px);
+    transition: transform 0.2s ease;
+  }
+
+  .modal-overlay.active .modal { transform: translateY(0); }
+
+  .modal h2 { font-size: 1.25rem; margin-bottom: 6px; color: #111827; }
+
+  .modal .modal-time {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+
+  .modal .modal-body {
+    font-size: 0.95rem;
+    color: #374151;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+
+  .slots {
+    display: inline-block;
+    margin-top: 14px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+
+  .slots-free { background: #dcfce7; color: #15803d; }
+  .slots-low  { background: #fef9c3; color: #a16207; }
+  .slots-none { background: #fee2e2; color: #b91c1c; }
+
+  .modal-links {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-links a {
+    display: block;
+    padding: 10px 14px;
+    background: #eef2ff;
+    color: #4338ca;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.15s ease;
+  }
+
+  .modal-links a:hover { background: #e0e7ff; }
+
+  .modal .close-btn {
+    display: block;
+    margin-top: 22px;
+    width: 100%;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .modal .close-btn:hover { background: #4f46e5; }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 1.5rem; }
+    .address-tab { padding: 8px 14px; font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Расписание занятий</h1>
+  <p class="center-desc">Учебный центр «Logos» — это образовательный центр в г. Сысерть, который предлагает комплексное обучение и развитие для детей и взрослых.</p>
+  <p class="subtitle">Нажмите на карточку или название, чтобы узнать подробности</p>
+  <div class="address-tabs" id="addressTabs">
+    <button class="address-tab active" data-address="sverdlova">ул. Свердлова, 82</button>
+    <button class="address-tab" data-address="novy">Мкр-н. Новый, д. 20</button>
+  </div>
+  <div class="address-info" id="addressInfo"></div>
+</header>
+
+<div id="app"></div>
+
+<div class="contact-block" id="contactBlock">
+  <h2>Хотите присоединиться к нашим занятиям?</h2>
+  <p>Будем рады видеть вас! Записывайтесь любым удобным способом:<br>
+  📞 Позвоните по телефону &nbsp;|&nbsp;
+  <span class="contact-link" id="socialLink">📲 Напишите в наши соцсети</span> &nbsp;|&nbsp;
+  <span class="contact-link" id="mapsLink">🚶 Загляните лично в учебный центр</span></p>
+  <div class="contact-grid">
+    <div class="contact-card">
+      <strong>📍 Ул. Свердлова, 82</strong>
+      +7 993 194 56 72
+    </div>
+    <div class="contact-card">
+      <strong>📍 Мкр-н. Новый, д. 20</strong>
+      +7 982 63 063 43
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle"></h2>
+    <div class="modal-time" id="modalTime"></div>
+    <div class="modal-body" id="modalDesc"></div>
+    <div id="modalSlots"></div>
+    <div class="modal-links" id="modalLinks"></div>
+    <button class="close-btn" id="closeBtn">Закрыть</button>
+  </div>
+</div>
+
+<script>
+const WAITLIST_TEXT = "Мы понимаем, как важно попасть именно в подходящую группу. Если все места заняты — просто свяжитесь с нами. Мы внесём вас в лист ожидания и обязательно предложим вариант: либо освободится место, либо мы откроем новую группу при достаточном числе желающих. Ваше желание учиться для нас важно!";
+
+const SOCIAL_LINKS = [
+  { label: "ВКонтакте", url: "https://vk.ru/logos_sysert" },
+  { label: "Макс — филиал на ул. Свердлова, 82", url: "https://max.ru/u/f9LHodD0cOJf6lzOUSecxNF_uDCygzq2gyQehYHvGxkUJdGFoztmnMVZoeA" },
+  { label: "Макс — филиал на мкр-н. Новый, д. 20", url: "https://max.ru/u/f9LHodD0cOLBQLEwLqE2zwIGQ4zHOEK1A8yJwJ2BSGyHVnKArjE8f07Irss" }
+];
+
+const MAP_LINKS = [
+  { label: "Яндекс.Карты — ул. Свердлова, 82", url: "https://yandex.ru/maps/org/logos/79743886420/?ll=60.811022%2C56.501139&z=17" },
+  { label: "Яндекс.Карты — мкр-н. Новый, д. 20", url: "https://yandex.ru/maps/org/logos/36843571013/?ll=60.809280%2C56.510954&z=17" }
+];
+
+const centers = {
+  sverdlova: {
+    name: "Ул. Свердлова, 82",
+    phone: "+7 993 194 56 72",
+    recruiting: [
+      { name: "Психолог", info: "Программы:\n— «Время для себя» — курс для женщин 50+\nПриглашаем в уютное пространство, где можно замедлиться, отдохнуть душой и снова почувствовать вкус к жизни.\n— «Путешествие в мир Миядзаки» — творческий курс в «Логосе»\nДля тех, кто готов творить, исследовать себя и менять пространство вокруг.\n— Базовые курсы психологии в «Логосе» — для детей и взрослых\nПонятно, бережно и с практикой. Помогаем разобраться в себе, в отношениях и в эмоциях — без сложных терминов и осуждения." },
+      { name: "Вязание крючком", info: "Научись вязать крючком обвесы, чехлы для наушников, браслеты и многое другое." },
+      { name: "Школа раннего развития", info: "Приглашаем ребят от 3-х лет на развивающие занятия в школу развития.\nКомплексные занятия, направленные на развитие детей в разных направлениях: дети изучают окружающий мир, цифры, звуки, буквы, слушают сказки и рассказы, песни, делают поделки и рисуют.\nТакже проводим занятия в отдельных группах для детей с ОВЗ." },
+      { name: "ИЗО-лепка", info: "Занятия для детей от 3 до 7 лет.\nДети учатся рисовать в разных техниках и разными предметами: кисти, мелки, карандаши, фломастеры, акварель, гуашь. Делают поделки из различных материалов, лепят из пластилина." },
+      { name: "ИЗО-студия", info: "Занятия для детей от 7 лет.\nДети учатся рисовать в разных техниках и разными предметами: кисти, мелки, карандаши, фломастеры, акварель, гуашь. Делают поделки из различных материалов, лепят из пластилина." },
+      { name: "Подготовка к экзаменам по обществознанию", info: "Подготовка к ОГЭ и ЕГЭ: уверенность в каждом ответе.\nПреподаватель с 19 годами опыта поможет освоить программу, избежать типичных ошибок и раскрыть потенциал ученика." },
+      { name: "Подготовка к экзаменам по истории", info: "Профессиональная подготовка к ОГЭ и ЕГЭ под руководством преподавателя с 19-летним педагогическим стажем." },
+      { name: "Подготовка к экзаменам по информатике", info: "Подготовка к ЕГЭ и ОГЭ по информатике. Преподаватель с 10-летним стажем поможет разобраться в алгоритмах, системах счисления, программировании и других непростых темах. Разберём типовые задания, отработаем ловушки экзамена и выстроим план, чтобы идти к цели без стресса." }
+    ],
+    schedule: [
+      {
+        section: "Английский язык (ВТ, ЧТ)",
+        subjects: [{
+          subject: "Группы",
+          cards: [
+            { title: "AS-I", time: "10:00 – 10:45", slots: { free: 5, total: 8 }, info: "2–3 класс, 2 смена" },
+            { title: "GoGe-3", time: "10:50 – 11:50", slots: { free: 1, total: 8 }, info: "6 класс, 2 смена" },
+            { title: "GoGe-2", time: "13:20 – 14:20", slots: { free: 2, total: 8 }, info: "4–5 класс, 1 смена" },
+            { title: "AS-III-1", time: "14:25 – 15:10", slots: { free: 3, total: 8 }, info: "3–4 класс, 1 смена" },
+            { title: "AS-S", time: "15:20 – 16:05", slots: { free: 0, total: 8 }, info: "1 класс, 1 смена" },
+            { title: "Get A2", time: "16:10 – 17:10", slots: { free: 5, total: 8 }, info: "8–9 класс, 1 смена" },
+            { title: "AS-III-2", time: "18:20 – 19:05", slots: { free: 3, total: 8 }, info: "3–4 класс, 2 смена" }
+          ]
+        }]
+      },
+      {
+        section: "Английский язык (индивидуальные занятия)",
+        subjects: [{
+          subject: "Индивидуальные занятия (СР)",
+          cards: [
+            { title: "Индивидуальное занятие", time: "СР 10:00 – 11:00", slots: null, info: "Индивидуальное занятие по английскому языку" },
+            { title: "Индивидуальное занятие", time: "СР 11:00 – 11:45", slots: null, info: "Индивидуальное занятие по английскому языку" },
+            { title: "Индивидуальное занятие", time: "СР 11:45 – 12:45", slots: null, info: "Индивидуальное занятие по английскому языку" },
+            { title: "Индивидуальное занятие", time: "СР 13:00 – 14:00", slots: null, info: "Индивидуальное занятие по английскому языку" }
+          ]
+        }]
+      },
+      {
+        section: "Подготовка к ОГЭ / ЕГЭ",
+        subjects: [
+          { subject: "Математика", cards: [
+            { title: "ОГЭ (для начинающих)", time: "ВТ 15:00 – 17:00", slots: { free: 0, total: 8 }, info: "Группа подготовки к ОГЭ" },
+            { title: "ОГЭ (для начинающих)", time: "ВТ 17:00 – 19:00", slots: { free: 2, total: 8 }, info: "Группа подготовки к ОГЭ" },
+            { title: "ОГЭ (для продвинутых)", time: "ЧТ 17:00 – 19:00", slots: { free: 1, total: 8 }, info: "Группа подготовки к ОГЭ" },
+            { title: "ЕГЭ", time: "ПТ 17:00 – 19:00", slots: { free: 0, total: 8 }, info: "Группа подготовки к ЕГЭ" },
+            { title: "ОГЭ (восьмиклассники)", time: "СБ 10:00 – 12:00", slots: { free: 3, total: 8 }, info: "Группа для восьмиклассников" }
+          ]},
+          { subject: "Химия", cards: [
+            { title: "ЕГЭ", time: "СБ 10:00 – 12:00", slots: { free: 5, total: 8 }, info: "Группа подготовки к ЕГЭ" },
+            { title: "ОГЭ", time: "СБ 14:00 – 16:00", slots: { free: 0, total: 4 }, info: "Группа подготовки к ОГЭ" }
+          ]},
+          { subject: "Информатика", cards: [
+            { title: "ЕГЭ", time: "СБ 10:00 – 12:00", slots: { free: 5, total: 6 }, info: "Группа подготовки к ЕГЭ" },
+            { title: "Мини-группа ОГЭ", time: "ПТ 17:00 – 19:00", slots: { free: 0, total: 3 }, info: "Мини-группа подготовки к ОГЭ" }
+          ]},
+          { subject: "Физика", cards: [
+            { title: "ОГЭ", time: "ПТ 18:00 – 19:00", slots: { free: 4, total: 6 }, info: "Группа подготовки к ОГЭ" },
+            { title: "ЕГЭ", time: "СБ 14:00 – 16:00", slots: { free: 0, total: 4 }, info: "Группа подготовки к ЕГЭ" }
+          ]}
+        ]
+      },
+      {
+        section: "Школьная программа",
+        subjects: [
+          { subject: "Химия", cards: [
+            { title: "9 класс", time: "СБ 12:00 – 14:00", slots: { free: 5, total: 8 }, info: "Школьная программа, 9 класс" }
+          ]},
+          { subject: "Математика", cards: [
+            { title: "8 класс", time: "СР 17:00 – 19:00", slots: { free: 0, total: 6 }, info: "Школьная программа, 8 класс" }
+          ]},
+          { subject: "История", cards: [
+            { title: "Мини-группа, 8 класс", time: "СР 17:00 – 19:00", slots: { free: 0, total: 4 }, info: "Мини-группа, школьная программа 8 класс" }
+          ]},
+          { subject: "Репетитор 1–2 класс", cards: [
+            { title: "Индивидуальное занятие", time: "ПН 18:00 – 19:00", slots: null, info: "Набор закрыт" },
+            { title: "Индивидуальное занятие", time: "ПН 19:00 – 20:00", slots: null, info: "Набор закрыт" },
+            { title: "Индивидуальное занятие", time: "СР 18:00 – 19:00", slots: null, info: "Набор закрыт" },
+            { title: "Индивидуальное занятие", time: "СР 19:00 – 20:00", slots: null, info: "Набор закрыт" },
+            { title: "Индивидуальное занятие", time: "ПТ 18:00 – 19:00", slots: null, info: "Набор закрыт" },
+            { title: "Индивидуальное занятие", time: "ПТ 19:00 – 20:00", slots: null, info: "Набор закрыт" }
+          ]}
+        ]
+      },
+      {
+        section: "Дошкольники",
+        subjects: [
+          { subject: "Подготовка к школе", cards: [
+            { title: "Группа 5–6 лет", time: "ВТ, ЧТ 17:30 – 18:30", slots: { free: 1, total: 8 }, info: "Подготовка к школе для детей 5–6 лет" }
+          ]},
+          { subject: "Школа раннего развития", cards: [
+            { title: "Индивидуальное занятие", time: "СР 17:30 – 18:15", slots: null, info: "Индивидуальное занятие" },
+            { title: "Мини-группа", time: "СР 18:20 – 19:25", slots: { free: 0, total: 4 }, info: "Мини-группа" },
+            { title: "Индивидуальное занятие", time: "ПТ 17:30 – 18:15", slots: null, info: "Индивидуальное занятие" }
+          ]},
+          { subject: "Логопед (ВТ, ЧТ)", cards: [
+            { title: "Запись по времени", time: "ВТ, ЧТ 16:00 – 19:30", slots: { free: 1, total: 8 }, info: "16:00 — занято\n16:30 — занято\n17:00 — занято в ЧТ, свободно во ВТ\n17:30 — занято\n18:00 — занято\n18:30 — занято\n19:00 — занято\n19:30 — свободно" }
+          ]}
+        ]
+      },
+      {
+        section: "Дополнительные занятия",
+        subjects: [
+          { subject: "Программирование", cards: [
+            { title: "Группа 8–12 лет", time: "СР 18:30 – 20:00", slots: { free: 2, total: 8 }, info: "Группа для детей 8–12 лет" },
+            { title: "Группа 14+", time: "СБ 12:00 – 14:00", slots: { free: 2, total: 6 }, info: "Группа для подростков 14+" }
+          ]},
+          { subject: "Вязание крючком", cards: [
+            { title: "Мини-группа", time: "СБ 14:00 – 16:00", slots: { free: 0, total: 3 }, info: "Мини-группа" }
+          ]},
+          { subject: "ИЗО-лепка", cards: [
+            { title: "Мини-группа", time: "ПН 18:10 – 18:55", slots: { free: 0, total: 4 }, info: "Мини-группа, занятия для детей от 3 до 7 лет" }
+          ]}
+        ]
+      }
+    ]
+  },
+  novy: {
+    name: "Мкр-н. Новый, д. 20",
+    phone: "+7 982 63 063 43",
+    recruiting: [
+      { name: "Русский ЕГЭ", info: "Подготовка к ЕГЭ по русскому языку.\nПреподаватель со стажем 27 лет: разбор всех типов заданий, отработка критериев оценивания, работа над сочинением и типичными ошибками. Фокус на том, где теряются баллы, — чтобы результат был предсказуемым и высоким." },
+      { name: "ИЗО-лепка от 3-х лет", info: "Занятия для детей от 3 до 7 лет.\nДети учатся рисовать в разных техниках и разными предметами: кисти, мелки, карандаши, фломастеры, акварель, гуашь. Делают поделки из различных материалов, лепят из пластилина." },
+      { name: "ИЗО-студия", info: "Занятия для детей от 7 лет.\nДети учатся рисовать в разных техниках и разными предметами: кисти, мелки, карандаши, фломастеры, акварель, гуашь. Делают поделки из различных материалов, лепят из пластилина." }
+    ],
+    schedule: [
+      {
+        section: "Подготовка к ОГЭ / ЕГЭ",
+        subjects: [
+          { subject: "Русский язык", cards: [
+            { title: "ОГЭ", time: "ВТ 16:10 – 18:10", slots: { free: 5, total: 8 }, info: "Группа занимается с октября" },
+            { title: "ОГЭ", time: "ПТ 16:00 – 18:00", slots: { free: 2, total: 8 }, info: "Группа занимается с сентября" },
+            { title: "ОГЭ (восьмиклассники)", time: "ПТ 18:00 – 20:00", slots: { free: 0, total: 8 }, info: "Группа для восьмиклассников" }
+          ]},
+          { subject: "Обществознание", cards: [
+            { title: "Мини-группа ОГЭ", time: "СР 17:00 – 19:00", slots: { free: 0, total: 4 }, info: "Мини-группа подготовки к ОГЭ" },
+            { title: "Индивидуальные занятия ЕГЭ", time: "ПТ 17:00 – 19:00", slots: null, info: "Индивидуальные занятия по подготовке к ЕГЭ" }
+          ]},
+          { subject: "Английский язык", cards: [
+            { title: "Индивидуальное занятие ЕГЭ", time: "ЧТ 16:00 – 17:00", slots: null, info: "Индивидуальное занятие по подготовке к ЕГЭ" },
+            { title: "Индивидуальное занятие ЕГЭ", time: "ЧТ 17:00 – 18:00", slots: null, info: "Индивидуальное занятие по подготовке к ЕГЭ" },
+            { title: "Индивидуальное занятие ЕГЭ", time: "ЧТ 18:00 – 19:00", slots: null, info: "Индивидуальное занятие по подготовке к ЕГЭ" },
+            { title: "Индивидуальное занятие ЕГЭ", time: "ЧТ 19:00 – 20:00", slots: null, info: "Индивидуальное занятие по подготовке к ЕГЭ" }
+          ]}
+        ]
+      },
+      {
+        section: "Школьная программа (набор закрыт)",
+        subjects: [
+          { subject: "Репетитор 1–2 класс", cards: [
+            { title: "Индивидуальное занятие", time: "ЧТ 18:00 – 19:00", slots: null, info: "Набор закрыт" },
+            { title: "Индивидуальное занятие", time: "ЧТ 19:00 – 20:00", slots: null, info: "Набор закрыт" },
+            { title: "Индивидуальное занятие", time: "СБ 18:00 – 19:00", slots: null, info: "Набор закрыт" },
+            { title: "Индивидуальное занятие", time: "СБ 19:00 – 20:00", slots: null, info: "Набор закрыт" }
+          ]}
+        ]
+      },
+      {
+        section: "Дошкольники",
+        subjects: [
+          { subject: "ИЗО-лепка", cards: [
+            { title: "ЧТ", time: "18:10 – 18:55", slots: { free: 2, total: 8 }, info: "Занятия для детей от 3 до 7 лет" },
+            { title: "ПТ (мини-группа)", time: "18:10 – 18:55", slots: { free: 0, total: 4 }, info: "Мини-группа, занятия для детей от 3 до 7 лет" }
+          ]},
+          { subject: "Логопед (СР, ПТ)", cards: [
+            { title: "Запись по времени", time: "СР, ПТ 16:00 – 19:30", slots: { free: 1, total: 8 }, info: "16:00 — занято, свободно в ПТ\n16:30 — занято\n17:00 — занято\n17:30 — занято\n18:00 — занято\n18:30 — занято\n19:00 — занято\n19:30 — занято" }
+          ]}
+        ]
+      },
+      {
+        section: "Английский язык (ВТ, ЧТ)",
+        subjects: [{
+          subject: "Группы",
+          cards: [
+            { title: "AS-I", time: "09:00 – 09:45", slots: { free: 2, total: 8 }, info: "2–3 класс, 2 смена" },
+            { title: "AS II", time: "10:30 – 11:15", slots: { free: 3, total: 8 }, info: "2 класс, 2 смена" },
+            { title: "AS-I", time: "13:00 – 13:45", slots: { free: 0, total: 8 }, info: "1 класс, 1 смена" },
+            { title: "Get B1+", time: "15:00 – 16:00", slots: { free: 1, total: 8 }, info: "8–9, 10 класс, 1 смена" },
+            { title: "OPT B1+ (только ВТ)", time: "16:10 – 17:40", slots: { free: 4, total: 8 }, info: "10–11 класс, 1 смена. Только вторник." },
+            { title: "Go getter 3 (только ВТ)", time: "17:45 – 18:45", slots: { free: 5, total: 8 }, info: "5–6 класс, 1 смена. Только вторник." }
+          ]
+        }]
+      },
+      {
+        section: "Английский язык (СР, ПТ)",
+        subjects: [{
+          subject: "Группы",
+          cards: [
+            { title: "AS III", time: "09:00 – 09:45", slots: { free: 4, total: 8 }, info: "3 класс, 2 смена" },
+            { title: "Go getter 3", time: "10:00 – 11:00", slots: { free: 2, total: 8 }, info: "6–7 класс, 2 смена" },
+            { title: "Get B1", time: "11:10 – 12:10", slots: { free: 1, total: 8 }, info: "7–8 класс, 2 смена" },
+            { title: "AS IV", time: "14:15 – 15:15", slots: { free: 2, total: 8 }, info: "4 класс, 1 смена" },
+            { title: "AS V", time: "15:20 – 16:20", slots: { free: 1, total: 8 }, info: "5 класс, 1 смена" },
+            { title: "Go getter 1", time: "16:30 – 17:30", slots: { free: 5, total: 8 }, info: "3–4 класс, 1 смена" },
+            { title: "AS III", time: "17:35 – 18:20", slots: { free: 4, total: 8 }, info: "3–4 класс, 1–2 смена" }
+          ]
+        }]
+      }
+    ]
+  }
+};
+
+const app = document.getElementById("app");
+const addressTabs = document.getElementById("addressTabs");
+const addressInfo = document.getElementById("addressInfo");
+const overlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalTime = document.getElementById("modalTime");
+const modalDesc = document.getElementById("modalDesc");
+const modalSlots = document.getElementById("modalSlots");
+const modalLinks = document.getElementById("modalLinks");
+
+function slotsBadge(slots) {
+  if (!slots) return { text: "Набор закрыт", cls: "status-none" };
+  const { free, total } = slots;
+  if (free === 0) return { text: `Мест нет (0/${total})`, cls: "status-full" };
+  if (free <= 3) return { text: `Мало мест (${free}/${total})`, cls: "status-few" };
+  return { text: `Свободно ${free}/${total}`, cls: "status-open" };
+}
+
+function slotsDetail(slots) {
+  if (!slots) return "";
+  const { free, total } = slots;
+  if (free === 0) return `<span class="slots slots-none">Свободных мест нет (0 из ${total})</span>`;
+  if (free <= 3) return `<span class="slots slots-low">Осталось мало мест: ${free} из ${total}</span>`;
+  return `<span class="slots slots-free">Свободных мест: ${free} из ${total}</span>`;
+}
+
+function renderCenter(key) {
+  const center = centers[key];
+  addressInfo.innerHTML = `<strong>${center.name}</strong> — телефон: ${center.phone}`;
+  app.innerHTML = "";
+
+  if (center.recruiting.length) {
+    const recruitSection = document.createElement("section");
+    recruitSection.className = "section";
+    recruitSection.innerHTML = `
+      <div class="section-title">
+        <span class="recruit-title" id="recruitTitle">
+          Ведётся набор в группы
+          <span class="hint">нажмите, чтобы узнать подробнее</span>
+        </span>
+      </div>
+      <div class="recruit-list" id="recruitList"></div>`;
+    app.appendChild(recruitSection);
+
+    recruitSection.querySelector("#recruitTitle").addEventListener("click", () => {
+      openModal({ title: "Ведётся набор в группы", time: "", info: WAITLIST_TEXT, slots: null });
+    });
+
+    const list = recruitSection.querySelector("#recruitList");
+    center.recruiting.forEach(item => {
+      const el = document.createElement("span");
+      el.className = "recruit-item";
+      el.textContent = item.name;
+      el.addEventListener("click", () => openModal({ title: item.name, time: "", info: item.info, slots: null }));
+      list.appendChild(el);
+    });
+  }
+
+  center.schedule.forEach(sec => {
+    const sectionEl = document.createElement("section");
+    sectionEl.className = "section";
+
+    const titleEl = document.createElement("div");
+    titleEl.className = "section-title";
+    titleEl.textContent = sec.section;
+    sectionEl.appendChild(titleEl);
+
+    sec.subjects.forEach(sub => {
+      const subjEl = document.createElement("div");
+      subjEl.className = "subject";
+
+      const subjTitle = document.createElement("div");
+      subjTitle.className = "subject-title";
+      subjTitle.textContent = sub.subject;
+      subjEl.appendChild(subjTitle);
+
+      const cardsEl = document.createElement("div");
+      cardsEl.className = "cards";
+
+      sub.cards.forEach(cardData => {
+        const card = document.createElement("div");
+        card.className = "card";
+        const badge = slotsBadge(cardData.slots);
+        card.innerHTML = `
+          <h3>${cardData.title}</h3>
+          <div class="time">${cardData.time}</div>
+          <span class="badge ${badge.cls}">${badge.text}</span>
+        `;
+        card.addEventListener("click", () => openModal(cardData));
+        cardsEl.appendChild(card);
+      });
+
+      subjEl.appendChild(cardsEl);
+      sectionEl.appendChild(subjEl);
+    });
+
+    app.appendChild(sectionEl);
+  });
+}
+
+function openModal(data) {
+  modalTitle.textContent = data.title;
+  modalTime.textContent = data.time || "";
+  modalDesc.textContent = data.info || "";
+  modalSlots.innerHTML = slotsDetail(data.slots);
+
+  modalLinks.innerHTML = "";
+  if (data.links && data.links.length) {
+    data.links.forEach(l => {
+      const a = document.createElement("a");
+      a.href = l.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = l.label;
+      modalLinks.appendChild(a);
+    });
+  }
+
+  overlay.classList.add("active");
+}
+
+function closeModal() { overlay.classList.remove("active"); }
+
+addressTabs.addEventListener("click", e => {
+  const tab = e.target.closest(".address-tab");
+  if (!tab) return;
+  addressTabs.querySelectorAll(".address-tab").forEach(t => t.classList.remove("active"));
+  tab.classList.add("active");
+  renderCenter(tab.dataset.address);
+});
+
+document.getElementById("socialLink").addEventListener("click", () => {
+  openModal({
+    title: "Наши соцсети",
+    time: "",
+    info: "Выберите удобную площадку — мы на связи:",
+    slots: null,
+    links: SOCIAL_LINKS
+  });
+});
+
+document.getElementById("mapsLink").addEventListener("click", () => {
+  openModal({
+    title: "Наши адреса на карте",
+    time: "",
+    info: "Откройте филиал на Яндекс.Картах:",
+    slots: null,
+    links: MAP_LINKS
+  });
+});
+
+document.getElementById("closeBtn").addEventListener("click", closeModal);
+overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+renderCenter("sverdlova");
+</script>
+
+</body>
+</html>
