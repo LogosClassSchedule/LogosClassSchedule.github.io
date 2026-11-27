@@ -1,0 +1,130 @@
+media: media
+
+content:
+  - name: schedule
+    label: Расписание
+    type: file
+    path: data.json
+    fields:
+      - name: sverdlova
+        label: Ул. Свердлова, 82
+        type: object
+        fields:
+          - name: name
+            label: Название адреса
+            type: string
+          - name: phone
+            label: Телефон
+            type: string
+          - name: recruiting
+            label: Ведётся набор
+            type: object
+            list: true
+            fields:
+              - name: name
+                label: Название
+                type: string
+              - name: info
+                label: Текст для всплывающего окна
+                type: text
+          - name: schedule
+            label: Расписание
+            type: object
+            list: true
+            fields:
+              - name: section
+                label: Раздел
+                type: string
+              - name: subjects
+                label: Предметы
+                type: object
+                list: true
+                fields:
+                  - name: subject
+                    label: Предмет
+                    type: string
+                  - name: cards
+                    label: Занятия
+                    type: object
+                    list: true
+                    fields:
+                      - name: title
+                        label: Название группы
+                        type: string
+                      - name: time
+                        label: Время
+                        type: string
+                      - name: info
+                        label: Текст для всплывающего окна
+                        type: text
+                      - name: slots
+                        label: Свободные места
+                        type: object
+                        fields:
+                          - name: free
+                            label: Свободно
+                            type: number
+                          - name: total
+                            label: Всего
+                            type: number
+      - name: novy
+        label: Мкр-н. Новый, д. 20
+        type: object
+        fields:
+          - name: name
+            label: Название адреса
+            type: string
+          - name: phone
+            label: Телефон
+            type: string
+          - name: recruiting
+            label: Ведётся набор
+            type: object
+            list: true
+            fields:
+              - name: name
+                label: Название
+                type: string
+              - name: info
+                label: Текст для всплывающего окна
+                type: text
+          - name: schedule
+            label: Расписание
+            type: object
+            list: true
+            fields:
+              - name: section
+                label: Раздел
+                type: string
+              - name: subjects
+                label: Предметы
+                type: object
+                list: true
+                fields:
+                  - name: subject
+                    label: Предмет
+                    type: string
+                  - name: cards
+                    label: Занятия
+                    type: object
+                    list: true
+                    fields:
+                      - name: title
+                        label: Название группы
+                        type: string
+                      - name: time
+                        label: Время
+                        type: string
+                      - name: info
+                        label: Текст для всплывающего окна
+                        type: text
+                      - name: slots
+                        label: Свободные места
+                        type: object
+                        fields:
+                          - name: free
+                            label: Свободно
+                            type: number
+                          - name: total
+                            label: Всего
+                            type: number
